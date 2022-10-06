@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- CSS only -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous" />
+        <title>CHAT</title>
+    </head>
+    <body>
+        <h1>ChatON</h1>
+        <div id="chat"></div>
+        <br />
+        <input type="text" id="msg" placeholder="Message" class="form-control" />
+        <input type="text" id="username" placeholder="Username" class="form-control" />
+        <button type="reset" onclick="send()" class="btn btn-primary" id="btn">Send</button>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js"></script>
+
+    <script>
+        let socket = io('http://localhost:3000');
+
+        socket.on('disconnect', () => {
+            console.log('disconnected!');
+        });
+
+        socket.on('sendMsg', data => {
+            let chat = document.getElementById('chat');
+            let p = document.createElement('p');
+
+            p.innerHTML = data.username + ': ' + data.msg;
+            chat.append(p);
+        });
+
+        function send() {
+            let msg = document.getElementById('msg').value;
+            let username = document.getElementById('username').value;
+
+            socket.emit('msg', { msg: msg, username: username });
+
+            const btn = document.getElementById('btn');
+
+            btn.addEventListener('click', function handleClick() {
+                event.preventDefault();
+
+                msg.value = '';
+            });
+        }
+    </script>
+</html>
